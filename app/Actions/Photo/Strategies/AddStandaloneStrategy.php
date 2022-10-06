@@ -22,6 +22,7 @@ use App\Image\VideoHandler;
 use App\Models\Photo;
 use App\Models\SizeVariant;
 use Illuminate\Contracts\Container\BindingResolutionException;
+use Illuminate\Support\Facades\DB;
 
 class AddStandaloneStrategy extends AddBaseStrategy
 {
@@ -161,7 +162,7 @@ class AddStandaloneStrategy extends AddBaseStrategy
 			// been rotated by `putSourceIntoFinalDestination` while being
 			// moved into final position.
 			$this->photo->checksum = $streamStat->checksum;
-			$this->photo->save();
+			DB::transaction(function () { $this->photo->save(); }, 10);
 
 			// Create original size variant of photo
 			// If the image has been loaded (and potentially auto-rotated)

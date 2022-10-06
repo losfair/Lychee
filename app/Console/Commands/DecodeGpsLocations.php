@@ -7,6 +7,7 @@ use App\Metadata\Geodecoder;
 use App\Models\Photo;
 use Illuminate\Console\Command;
 use Symfony\Component\Console\Exception\ExceptionInterface as SymfonyConsoleException;
+use Illuminate\Support\Facades\DB;
 
 class DecodeGpsLocations extends Command
 {
@@ -65,7 +66,7 @@ class DecodeGpsLocations extends Command
 			$this->line('Processing ' . $photo->title . '...');
 
 			$photo->location = Geodecoder::decodeLocation_core($photo->latitude, $photo->longitude, $cachedProvider);
-			$photo->save();
+			DB::transaction(function () use ($photo) { $photo->save(); }, 10);
 		}
 
 		return 0;

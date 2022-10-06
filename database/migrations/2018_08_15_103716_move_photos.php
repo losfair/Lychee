@@ -80,7 +80,7 @@ class MovePhotos extends Migration
 
 				$photoModel = new MovePhotos_Photo();
 				$photoModel->setRawAttributes($photoAttributes);
-				$photoModel->save();
+				DB::transaction(function () use ($photoModel) { $photoModel->save(); }, 10);
 			}
 		}
 	}

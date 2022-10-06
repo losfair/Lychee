@@ -24,7 +24,7 @@ class MigrateAdminUser extends Migration
 		Configs::invalidateCache();
 		$user->username = Configs::getValueAsString('username', '');
 		$user->password = Configs::getValueAsString('password', '');
-		$user->save();
+		DB::transaction(function () use ($user) { $user->save(); }, 10);
 	}
 
 	/**

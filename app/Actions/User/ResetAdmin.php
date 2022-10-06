@@ -4,6 +4,7 @@ namespace App\Actions\User;
 
 use App\Exceptions\ModelDBException;
 use App\Models\User;
+use Illuminate\Support\Facades\DB;
 
 /**
  * We allow to reset admin User.
@@ -27,6 +28,6 @@ class ResetAdmin
 		$user->password = '';
 		$user->is_locked = false;
 		$user->may_upload = true;
-		$user->save();
+		DB::transaction(function () use ($user) { $user->save(); }, 10);
 	}
 }

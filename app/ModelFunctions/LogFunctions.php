@@ -4,6 +4,7 @@ namespace App\ModelFunctions;
 
 use App\Models\Logs;
 use Psr\Log\AbstractLogger;
+use Illuminate\Support\Facades\DB;
 
 // Class for FFMpeg to convert files to mov format
 class LogFunctions extends AbstractLogger
@@ -57,6 +58,6 @@ class LogFunctions extends AbstractLogger
 			'line' => $line,
 			'text' => $text,
 		]);
-		$log->save();
+		DB::transaction(function () use ($log) { $log->save(); }, 10);
 	}
 }

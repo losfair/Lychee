@@ -308,7 +308,7 @@ class UsersTest extends TestCase
 		$admin = User::findOrFail(0);
 		$admin->may_upload = false;
 		$admin->is_locked = true;
-		$admin->save();
+		DB::transaction(function () use ($admin) { $admin->save(); }, 10);
 
 		// Log as admin and check the rights
 		Auth::loginUsingId(0);
@@ -324,7 +324,7 @@ class UsersTest extends TestCase
 		// Correct the rights
 		$admin->may_upload = true;
 		$admin->is_locked = false;
-		$admin->save();
+		DB::transaction(function () use ($admin) { $admin->save(); }, 10);
 
 		// Log as admin and verify behaviour
 		Auth::loginUsingId(0);

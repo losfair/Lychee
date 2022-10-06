@@ -6,6 +6,7 @@ use App\Exceptions\ModelDBException;
 use App\Models\User;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
 
 class SetLogin
 {
@@ -29,7 +30,7 @@ class SetLogin
 		$adminUser->password = Hash::make($password);
 		$adminUser->is_locked = false;
 		$adminUser->may_upload = true;
-		$adminUser->save();
+		DB::transaction(function () use ($adminUser) { $adminUser->save(); }, 10);
 
 		return $adminUser;
 	}

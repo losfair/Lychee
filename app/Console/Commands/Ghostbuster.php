@@ -15,6 +15,7 @@ use League\Flysystem\Adapter\Local as LocalFlysystem;
 use function Safe\readlink;
 use function Safe\scandir;
 use function Safe\unlink;
+use Illuminate\Support\Facades\DB;
 use Symfony\Component\Console\Exception\ExceptionInterface as SymfonyConsoleException;
 
 class Ghostbuster extends Command
@@ -139,7 +140,7 @@ class Ghostbuster extends Command
 						/** @var Photo $photo */
 						foreach ($photos as $photo) {
 							$photo->live_photo_short_path = null;
-							$photo->save();
+							DB::transaction(function () use ($photo) { $photo->save(); }, 10);
 						}
 					}
 				} elseif ($photos->count() + $sizeVariants->count() === 0) {

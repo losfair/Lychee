@@ -42,6 +42,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\App;
 use Symfony\Component\HttpFoundation\StreamedResponse;
+use Illuminate\Support\Facades\DB;
 
 class AlbumController extends Controller
 {
@@ -129,7 +130,7 @@ class AlbumController extends Controller
 		/** @var BaseAlbum $album */
 		foreach ($request->albums() as $album) {
 			$album->title = $request->title();
-			$album->save();
+			DB::transaction(function () use ($album) { $album->save(); }, 10);
 		}
 	}
 
@@ -165,7 +166,7 @@ class AlbumController extends Controller
 	public function setDescription(SetAlbumDescriptionRequest $request): void
 	{
 		$request->album()->description = $request->description();
-		$request->album()->save();
+		DB::transaction(function () use ($request) { $request->album()->save(); }, 10);
 	}
 
 	/**
@@ -180,7 +181,7 @@ class AlbumController extends Controller
 	public function setShowTags(SetAlbumTagsRequest $request): void
 	{
 		$request->album()->show_tags = $request->tags();
-		$request->album()->save();
+		DB::transaction(function () use ($request) { $request->album()->save(); }, 10);
 	}
 
 	/**
@@ -195,7 +196,7 @@ class AlbumController extends Controller
 	public function setCover(SetAlbumCoverRequest $request): void
 	{
 		$request->album()->cover_id = $request->photo()?->id;
-		$request->album()->save();
+		DB::transaction(function () use ($request) { $request->album()->save(); }, 10);
 	}
 
 	/**
@@ -210,7 +211,7 @@ class AlbumController extends Controller
 	public function setLicense(SetAlbumLicenseRequest $request): void
 	{
 		$request->album()->license = $request->license();
-		$request->album()->save();
+		DB::transaction(function () use ($request) { $request->album()->save(); }, 10);
 	}
 
 	/**
@@ -303,7 +304,7 @@ class AlbumController extends Controller
 	public function setNSFW(SetAlbumNSFWRequest $request): void
 	{
 		$request->album()->is_nsfw = $request->isNSFW();
-		$request->album()->save();
+		DB::transaction(function () use ($request) { $request->album()->save(); }, 10);
 	}
 
 	/**
@@ -318,7 +319,7 @@ class AlbumController extends Controller
 	public function setSorting(SetAlbumSortingRequest $request): void
 	{
 		$request->album()->sorting = $request->sortingCriterion();
-		$request->album()->save();
+		DB::transaction(function () use ($request) { $request->album()->save(); }, 10);
 	}
 
 	/**

@@ -38,6 +38,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Gate;
 use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
+use Illuminate\Support\Facades\DB;
 
 class PhotoController extends Controller
 {
@@ -150,7 +151,7 @@ class PhotoController extends Controller
 		/** @var Photo $photo */
 		foreach ($request->photos() as $photo) {
 			$photo->title = $title;
-			$photo->save();
+			DB::transaction(function () use ($photo) { $photo->save(); }, 10);
 		}
 	}
 
@@ -168,7 +169,7 @@ class PhotoController extends Controller
 		/** @var Photo $photo */
 		foreach ($request->photos() as $photo) {
 			$photo->is_starred = $request->isStarred();
-			$photo->save();
+			DB::transaction(function () use ($photo) { $photo->save(); }, 10);
 		}
 	}
 
@@ -184,7 +185,7 @@ class PhotoController extends Controller
 	public function setDescription(SetPhotoDescriptionRequest $request): void
 	{
 		$request->photo()->description = $request->description();
-		$request->photo()->save();
+		DB::transaction(function () use ($request) { $request->photo()->save(); }, 10);
 	}
 
 	/**
@@ -204,7 +205,7 @@ class PhotoController extends Controller
 	public function setPublic(SetPhotoPublicRequest $request): void
 	{
 		$request->photo()->is_public = $request->isPublic();
-		$request->photo()->save();
+		DB::transaction(function () use ($request) { $request->photo()->save(); }, 10);
 	}
 
 	/**
@@ -222,7 +223,7 @@ class PhotoController extends Controller
 		/** @var Photo $photo */
 		foreach ($request->photos() as $photo) {
 			$photo->tags = $tags;
-			$photo->save();
+			DB::transaction(function () use ($photo) { $photo->save(); }, 10);
 		}
 	}
 
@@ -249,7 +250,7 @@ class PhotoController extends Controller
 			if ($album !== null) {
 				$photo->owner_id = $album->owner_id;
 			}
-			$photo->save();
+			DB::transaction(function () use ($photo) { $photo->save(); }, 10);
 			$notify->do($photo);
 		}
 	}
@@ -266,7 +267,7 @@ class PhotoController extends Controller
 	public function setLicense(SetPhotoLicenseRequest $request): void
 	{
 		$request->photo()->license = $request->license();
-		$request->photo()->save();
+		DB::transaction(function () use ($request) { $request->photo()->save(); }, 10);
 	}
 
 	/**

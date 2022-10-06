@@ -8,6 +8,7 @@ use App\Models\Extensions\UTCBasedTimes;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
 use function Safe\substr;
+use Illuminate\Support\Facades\DB;
 
 /**
  * App\Logs.
@@ -133,7 +134,7 @@ class Logs extends Model
 				'line' => $line,
 				'text' => $msg,
 			]);
-			$log->save();
+			DB::transaction(function () use ($log) { $log->save(); }, 10);
 		} catch (\Throwable) {
 		}
 	}

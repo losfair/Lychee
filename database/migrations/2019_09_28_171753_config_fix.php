@@ -7,6 +7,7 @@ use App\Models\Logs;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 
 class ConfigFix extends Migration
 {
@@ -103,7 +104,7 @@ class ConfigFix extends Migration
 			);
 			if ($c === 0) {
 				$config->value = $value['value'];
-				$config->save();
+				DB::transaction(function () use ($config) { $config->save(); }, 10);
 			}
 		}
 	}

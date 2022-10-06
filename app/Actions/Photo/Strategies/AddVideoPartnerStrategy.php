@@ -14,6 +14,7 @@ use App\Image\MediaFile;
 use App\Image\NativeLocalFile;
 use App\Image\StreamStat;
 use App\Models\Photo;
+use Illuminate\Support\Facades\DB;
 use function Safe\substr;
 
 /**
@@ -53,7 +54,7 @@ class AddVideoPartnerStrategy extends AddBaseStrategy
 		$streamStat = $this->putSourceIntoFinalDestination($videoTargetFile);
 		$this->photo->live_photo_short_path = $videoPath;
 		$this->photo->live_photo_checksum = $streamStat?->checksum;
-		$this->photo->save();
+		DB::transaction(function () { $this->photo->save(); }, 10);
 
 		return $this->photo;
 	}

@@ -3,6 +3,7 @@
 use App\Models\Configs;
 use App\Models\Photo;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Support\Facades\DB;
 
 class UpdateLicences extends Migration
 {
@@ -53,7 +54,7 @@ class UpdateLicences extends Migration
 		}
 		foreach ($photos as $photo) {
 			$photo->license = $photo->license . '-4.0';
-			$photo->save();
+			DB::transaction(function () use ($photo) { $photo->save(); }, 10);
 		}
 	}
 
@@ -72,7 +73,7 @@ class UpdateLicences extends Migration
 		foreach ($photos as $photo) {
 			// Delete version
 			$photo->license = substr($photo->license, 0, -4);
-			$photo->save();
+			DB::transaction(function () use ($photo) { $photo->save(); }, 10);
 		}
 	}
 }

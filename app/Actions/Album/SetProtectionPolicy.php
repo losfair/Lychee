@@ -9,6 +9,7 @@ use App\Exceptions\ModelDBException;
 use App\Models\Extensions\BaseAlbum;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
 
 /**
  * Class SetProtectionPolicy.
@@ -52,7 +53,7 @@ class SetProtectionPolicy extends Action
 			}
 		}
 
-		$album->save();
+		DB::transaction(function () use ($album) { $album->save(); }, 10);
 
 		// Reset permissions for photos
 		if ($album->is_public) {

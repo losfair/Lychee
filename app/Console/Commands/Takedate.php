@@ -18,6 +18,7 @@ use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Output\ConsoleSectionOutput;
 use Symfony\Component\String\Exception\ExceptionInterface as SymfonyStringException;
+use Illuminate\Support\Facades\DB;
 
 class Takedate extends Command
 {
@@ -172,7 +173,7 @@ class Takedate extends Command
 					}
 				}
 
-				$photo->save();
+				DB::transaction(function () use ($photo) { $photo->save(); }, 10);
 			}
 
 			return 0;

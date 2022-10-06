@@ -8,6 +8,7 @@ use App\Exceptions\PhotoSkippedException;
 use App\Models\Logs;
 use App\Models\Photo;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Support\Facades\DB;
 
 class AddDuplicateStrategy extends AddBaseStrategy
 {
@@ -31,7 +32,7 @@ class AddDuplicateStrategy extends AddBaseStrategy
 			$this->hydrateMetadata();
 			if ($this->photo->isDirty()) {
 				Logs::notice(__METHOD__, __LINE__, 'Updating metadata of existing photo.');
-				$this->photo->save();
+				DB::transaction(function () { $this->photo->save(); }, 10);
 				$hasBeenReSynced = true;
 			}
 		}
@@ -51,7 +52,7 @@ class AddDuplicateStrategy extends AddBaseStrategy
 			$this->photo->is_public = $this->parameters->is_public;
 			$this->photo->is_starred = $this->parameters->is_starred;
 			$this->setParentAndOwnership();
-			$this->photo->save();
+			DB::transaction(function () { $this->photo->save(); }, 10);
 		}
 
 		return $this->photo;

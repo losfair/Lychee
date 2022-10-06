@@ -16,6 +16,7 @@ use Safe\Exceptions\InfoException;
 use function Safe\set_time_limit;
 use function Safe\sprintf;
 use Symfony\Component\Console\Exception\ExceptionInterface as SymfonyConsoleException;
+use Illuminate\Support\Facades\DB;
 
 class VideoData extends Command
 {
@@ -110,7 +111,7 @@ class VideoData extends Command
 				$sizeVariantFactory->init($photo);
 				$sizeVariantFactory->createSizeVariants();
 
-				$photo->save();
+				DB::transaction(function () use ($photo) { $photo->save(); }, 10);
 			}
 
 			return 0;

@@ -10,6 +10,7 @@ use App\Models\Logs;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
 
 class UpdateLogin
 {
@@ -50,7 +51,7 @@ class UpdateLogin
 		}
 
 		$user->password = Hash::make($password);
-		$user->save();
+		DB::transaction(function () use ($user) { $user->save(); }, 10);
 
 		return $user;
 	}

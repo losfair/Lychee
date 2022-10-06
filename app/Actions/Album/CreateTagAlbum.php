@@ -6,6 +6,7 @@ use App\Exceptions\ModelDBException;
 use App\Exceptions\UnauthenticatedException;
 use App\Models\TagAlbum;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class CreateTagAlbum extends Action
 {
@@ -29,7 +30,7 @@ class CreateTagAlbum extends Action
 		$album->title = $title;
 		$album->show_tags = $show_tags;
 		$album->owner_id = $userId;
-		$album->save();
+		DB::transaction(function () use ($album) { $album->save(); }, 10);
 
 		return $album;
 	}

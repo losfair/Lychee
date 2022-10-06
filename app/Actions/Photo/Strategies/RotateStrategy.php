@@ -19,6 +19,7 @@ use App\Models\Photo;
 use App\Models\SizeVariant;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 
 class RotateStrategy
 {
@@ -107,7 +108,7 @@ class RotateStrategy
 		// The checksum has been changed due to rotation.
 		$oldChecksum = $this->photo->checksum;
 		$this->photo->checksum = $streamStat->checksum;
-		$this->photo->save();
+		DB::transaction(function () { $this->photo->save(); }, 10);
 
 		// Re-create original size variant of photo
 		$newOriginalSizeVariant = $this->photo->size_variants->create(
@@ -169,7 +170,7 @@ class RotateStrategy
 					$newSizeVariant->filesize
 				);
 			}
-			$duplicate->save();
+			DB::transaction(function () use ($duplicate) { $duplicate->save(); }, 10);
 		}
 
 		return $this->photo;

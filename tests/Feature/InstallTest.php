@@ -17,6 +17,7 @@ use App\Models\User;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use Tests\TestCase;
+use Illuminate\Support\Facades\DB;
 
 class InstallTest extends TestCase
 {
@@ -148,8 +149,8 @@ class InstallTest extends TestCase
 		$response = $this->get('/');
 		$response->assertOk();
 
-		$admin->save();
+		DB::transaction(function () use ($admin) { $admin->save(); }, 10);
 		$admin->id = 0;
-		$admin->save();
+		DB::transaction(function () use ($admin) { $admin->save(); }, 10);
 	}
 }

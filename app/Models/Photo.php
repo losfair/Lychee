@@ -31,6 +31,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
 use function Safe\preg_match;
+use Illuminate\Support\Facades\DB;
 
 /**
  * App\Photo.
@@ -470,7 +471,7 @@ class Photo extends Model implements HasRandomID
 		// Se we unset the relation and explicitly duplicate the size variants.
 		$duplicate->unsetRelation('size_variants');
 		// save duplicate so that the photo gets an ID
-		$duplicate->save();
+		DB::transaction(function () use ($duplicate) { $duplicate->save(); }, 10);
 
 		$areSizeVariantsOriginallyLoaded = $this->relationLoaded('size_variants');
 		// Duplicate the size variants of this instance for the duplicate

@@ -21,6 +21,7 @@ use Illuminate\Support\Facades\Session;
 use function PHPUnit\Framework\assertEquals;
 use PHPUnit\Framework\ExpectationFailedException;
 use Tests\TestCase;
+use Illuminate\Support\Facades\DB;
 
 class UpdateTest extends TestCase
 {
@@ -93,7 +94,7 @@ class UpdateTest extends TestCase
 		$pw = $adminUser->password;
 		$adminUser->username = Hash::make('test_login');
 		$adminUser->password = Hash::make('test_password');
-		$adminUser->save();
+		DB::transaction(function () use ($adminUser) { $adminUser->save(); }, 10);
 
 		// We disable middlewares because they are not what we want to test here.
 		$this->withoutMiddleware();
@@ -116,6 +117,6 @@ class UpdateTest extends TestCase
 		Session::flush();
 		$adminUser->username = $login;
 		$adminUser->password = $pw;
-		$adminUser->save();
+		DB::transaction(function () use ($adminUser) { $adminUser->save(); }, 10);
 	}
 }

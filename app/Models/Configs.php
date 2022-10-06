@@ -15,6 +15,7 @@ use App\Models\Extensions\UseFixedQueryBuilder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use function Safe\sprintf;
+use Illuminate\Support\Facades\DB;
 
 /**
  * App\Configs.
@@ -244,7 +245,7 @@ class Configs extends Model
 				throw new InvalidConfigOption($message);
 			}
 			$config->value = $strValue;
-			$config->save();
+			DB::transaction(function () use ($config) { $config->save(); }, 10);
 		} catch (ModelNotFoundException $e) {
 			throw new InvalidConfigOption('key ' . $key . ' not found!', $e);
 		} catch (ModelDBException $e) {

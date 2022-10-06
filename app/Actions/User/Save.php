@@ -8,6 +8,7 @@ use App\Exceptions\ModelDBException;
 use App\Http\Requests\Traits\HasPasswordTrait;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
 
 class Save
 {
@@ -43,6 +44,6 @@ class Save
 				throw new InvalidPropertyException('Could not hash password');
 			}
 		}
-		$user->save();
+		DB::transaction(function () use ($user) { $user->save(); }, 10);
 	}
 }

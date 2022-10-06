@@ -7,6 +7,7 @@ use App\Exceptions\InvalidPropertyException;
 use App\Exceptions\ModelDBException;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
 
 class Create
 {
@@ -24,7 +25,7 @@ class Create
 		$user->is_locked = $isLocked;
 		$user->username = $username;
 		$user->password = Hash::make($password);
-		$user->save();
+		DB::transaction(function () use ($user) { $user->save(); }, 10);
 
 		return $user;
 	}

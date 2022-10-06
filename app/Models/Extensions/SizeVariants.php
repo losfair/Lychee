@@ -14,6 +14,7 @@ use App\Exceptions\ModelDBException;
 use App\Models\Photo;
 use App\Models\SizeVariant;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\DB;
 
 /**
  * Class SizeVariants.
@@ -207,7 +208,7 @@ class SizeVariants extends DTO
 			$result->width = $dim->width;
 			$result->height = $dim->height;
 			$result->filesize = $filesize;
-			$result->save();
+			DB::transaction(function () use ($result) { $result->save(); }, 10);
 			$this->add($result);
 
 			return $result;

@@ -6,6 +6,7 @@ use App\Exceptions\ModelDBException;
 use App\Exceptions\UnauthenticatedException;
 use App\Models\Album;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class Create extends Action
 {
@@ -23,7 +24,7 @@ class Create extends Action
 		$album = new Album();
 		$album->title = $title;
 		$this->set_parent($album, $parentAlbum);
-		$album->save();
+		DB::transaction(function () use ($album) { $album->save(); }, 10);
 
 		return $album;
 	}

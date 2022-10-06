@@ -19,6 +19,7 @@ use Carbon\Exceptions\InvalidFormatException;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class UserController extends Controller
 {
@@ -118,7 +119,7 @@ class UserController extends Controller
 				$user->notifications()->delete();
 			}
 
-			$user->save();
+			DB::transaction(function () use ($user) { $user->save(); }, 10);
 		} catch (\InvalidArgumentException $e) {
 			throw new FrameworkException('Laravel\'s notification module', $e);
 		}
@@ -170,7 +171,7 @@ class UserController extends Controller
 		$user = Auth::user() ?? throw new UnauthenticatedException();
 		$token = strtr(base64_encode(random_bytes(16)), '+/', '-_');
 		$user->token = hash('SHA512', $token);
-		$user->save();
+		DB::transaction(function () use ($user) { $user->save(); }, 10);
 
 		return ['token' => $token];
 	}
@@ -188,6 +189,6 @@ class UserController extends Controller
 		/** @var User $user */
 		$user = Auth::user() ?? throw new UnauthenticatedException();
 		$user->token = null;
-		$user->save();
+		DB::transaction(function () use ($user) { $user->save(); }, 10);
 	}
 }

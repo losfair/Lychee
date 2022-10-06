@@ -8,6 +8,7 @@ use App\Models\Logs;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
 
 class AdminAuthentication
 {
@@ -36,7 +37,7 @@ class AdminAuthentication
 
 			// update the admin username so we do not need to go through here anymore.
 			$adminUser->username = $username;
-			$adminUser->save();
+			DB::transaction(function () use ($adminUser) { $adminUser->save(); }, 10);
 
 			return true;
 		}

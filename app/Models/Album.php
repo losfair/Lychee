@@ -20,6 +20,7 @@ use Illuminate\Support\Facades\Storage;
 use Kalnoy\Nestedset\DescendantsRelation;
 use Kalnoy\Nestedset\Node;
 use Kalnoy\Nestedset\NodeTrait;
+use Illuminate\Support\Facades\DB;
 
 /**
  * Class Album.
@@ -310,7 +311,7 @@ class Album extends BaseAlbum implements Node
 			$new_track_id = strtr(base64_encode(random_bytes(18)), '+/', '-_');
 			Storage::putFileAs('tracks/', $file, "$new_track_id.xml");
 			$this->track_short_path = "tracks/$new_track_id.xml";
-			$this->save();
+			DB::transaction(function () { $this->save(); }, 10);
 		} catch (ModelDBException $e) {
 			throw $e;
 		} catch (\Exception $e) {
@@ -332,6 +333,6 @@ class Album extends BaseAlbum implements Node
 		}
 		Storage::delete($this->track_short_path);
 		$this->track_short_path = null;
-		$this->save();
+		DB::transaction(function () { $this->save(); }, 10);
 	}
 }

@@ -12,6 +12,7 @@ use App\Models\SizeVariant;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Safe\Exceptions\InfoException;
+use Illuminate\Support\Facades\DB;
 use function Safe\set_time_limit;
 
 class ExifLens extends Command
@@ -133,8 +134,10 @@ class ExifLens extends Command
 						$updated = true;
 					}
 					if ($updated) {
-						$photo->save();
-						$photo->size_variants->getOriginal()->save();
+						DB::transaction(function () use ($photo) {
+							$photo->save();
+							$photo->size_variants->getOriginal()->save();
+						}, 10);
 						$this->line($i . ': EXIF updated for ' . $photo->title);
 					} else {
 						$this->line($i . ': Could not get EXIF data/nothing to update for ' . $photo->title . '.');

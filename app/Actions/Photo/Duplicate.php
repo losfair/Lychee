@@ -7,6 +7,7 @@ use App\Models\Album;
 use App\Models\Photo;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Support\Collection as BaseCollection;
+use Illuminate\Support\Facades\DB;
 
 class Duplicate
 {
@@ -30,7 +31,7 @@ class Duplicate
 			if ($album !== null) {
 				$duplicate->owner_id = $album->owner_id;
 			}
-			$duplicate->save();
+			DB::transaction(function () use ($duplicate) { $duplicate->save(); }, 10);
 			$duplicates->add($duplicate);
 		}
 
